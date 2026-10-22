@@ -1,58 +1,34 @@
-# K8S Audit
-
-Fill this in after you run `./audit.sh`. The script is only a hint. Your evidence below is what gets scored.
-
-## My app
-
-- Name:
-- Repo link:
-- Tiers (frontend / API / database or cache, and what each one is built with):
-- Kubernetes manifests are in (folder):
-- How to run it from a fresh machine (every command, in order, starting from `kind create cluster`):
-- How to open it (URL, or port-forward command):
-
-## Before you submit
-
-- [ ] "My app" is filled in and the run steps work on a fresh cluster
-- [ ] Every row has a status; every ✅ has evidence and a one-line reason
-- [ ] I ran `./audit.sh` and I can explain every ❌ and ⚠️
-- [ ] Manifests are in the repo and the links in the table work
-
-## How to fill the table
-
-- **Status**: ✅ used and working. ⚠️ tried, or only partly used (say what is missing). ❌ not used.
-- **Evidence**: a link to the file in your repo (with line numbers if the file is long), or pasted command output in a code block. Not a screenshot.
-- **Why I used it in my app**: one line. What would break or get worse without it?
-- A tick without evidence does not count. A concept that does nothing for your app does not count either.
-- Leave the last column as it is. It is there to help you.
+- **How to open it:** Open `http://localhost/` on the machine running the kind cluster. The `/result` route currently returns HTTP 404, so it needs further investigation.
 
 ## Audit
 
-| Concept | Status (✅ / ⚠️ / ❌) | Evidence | Why I used it in my app | Where to look |
+| Concept | Status | Evidence | Why I used it in my app | Where to look |
 |---|---|---|---|---|
-| Deployment + ReplicaSet | | | | [nginx Deployment](https://github.com/LondheShubham153/kubestarter/blob/main/examples/nginx/deployment.yml), [ReplicaSet](https://github.com/LondheShubham153/kubernetes-in-one-shot/blob/master/nginx/replicasets.yml) <!-- TODO: add video timestamp --> |
-| Service | | | | [nginx Service](https://github.com/LondheShubham153/kubestarter/blob/main/examples/nginx/service.yml) <!-- TODO: add video timestamp --> |
-| Namespace | | | | [namespace manifest](https://github.com/LondheShubham153/kubernetes-in-one-shot/blob/master/nginx/namespace.yml), [k8s docs](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) <!-- TODO: add video timestamp --> |
-| Labels and selectors | | | | [commands: namespaces, labels, selectors](https://github.com/LondheShubham153/kubernetes-in-one-shot/blob/master/README.md), [k8s docs](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) <!-- TODO: add video timestamp --> |
-| Rolling update + rollback | | | | [rolling update](https://github.com/LondheShubham153/kubestarter/blob/main/Deployment_Strategies/Rolling-Update-Deployment/) (rollback is not covered there, see [k8s docs](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)) <!-- TODO: add video timestamp --> |
-| ConfigMap | | | | [MySQL ConfigMap](https://github.com/LondheShubham153/kubestarter/blob/main/examples/mysql/configMap.yml) <!-- TODO: add video timestamp --> |
-| Secret | | | | [MySQL Secret](https://github.com/LondheShubham153/kubestarter/blob/main/examples/mysql/secrets.yml) <!-- TODO: add video timestamp --> |
-| Requests and limits | | | | [Deployment with resources](https://github.com/LondheShubham153/kubestarter/blob/main/HPA_VPA/apache-deployment.yml), [k8s docs](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) <!-- TODO: add video timestamp --> |
-| Probes (liveness + readiness) | | | | [k8s docs](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/), [liveness example](https://github.com/LondheShubham153/kubernetes-in-one-shot/blob/master/django-notes-app/k8s/deployment.yml) <!-- TODO: add video timestamp --> |
-| PVC | | | | [PVC](https://github.com/LondheShubham153/kubestarter/blob/main/PersistentVolumes/PersistentVolumeClaim.yaml), [MySQL volumes](https://github.com/LondheShubham153/kubestarter/blob/main/examples/mysql/persistentVols.yml) (kind creates the volume for you, see [kind/README.md](kind/README.md)) <!-- TODO: add video timestamp --> |
-| Ingress | | | | [Ingress examples](https://github.com/LondheShubham153/kubestarter/blob/main/Ingress/) (written for minikube, use [kind/README.md](kind/README.md) for the controller), [Ingress manifest](https://github.com/LondheShubham153/kubernetes-in-one-shot/blob/master/nginx/ingress.yml) <!-- TODO: add video timestamp --> |
-| Multi-node kind cluster | | | | [kubestarter kind config](https://github.com/LondheShubham153/kubestarter/blob/main/kind-cluster/kind-config.yml), [our config](kind/kind-config.yaml) <!-- TODO: add video timestamp --> |
-| HPA (stretch) | | | | [HPA manifest](https://github.com/LondheShubham153/kubestarter/blob/main/HPA_VPA/apache-hpa.yml), [metrics-server steps](https://github.com/LondheShubham153/kubestarter/blob/main/HPA_VPA/README.md) <!-- TODO: add video timestamp --> |
-| RBAC + ServiceAccount (stretch) | | | | [RBAC examples](https://github.com/LondheShubham153/kubestarter/blob/main/RBAC/) <!-- TODO: add video timestamp --> |
-| CronJob (stretch) | | | | [CronJob manifest](https://github.com/LondheShubham153/kubernetes-in-one-shot/blob/master/nginx/cron-job.yml), [k8s docs](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) <!-- TODO: add video timestamp --> |
-| GitHub Actions deploying to kind (stretch) | | | | [helm/kind-action](https://github.com/helm/kind-action), [example workflow](examples/sample-app-k8s/.github/workflows/kind-deploy.yml) <!-- TODO: add video timestamp --> |
+| Deployment + ReplicaSet | ✅ | `./audit.sh`: 4 deployments detected. | Keeps application components managed and recoverable. | `k8s/voting-app.yaml` |
+| Service | ✅ | `./audit.sh`: 4 services with endpoints. | Provides stable networking to pods. | `k8s/voting-app.yaml` |
+| Namespace | ✅ | `./audit.sh`: `voting` namespace detected. | Separates app resources from system resources. | `k8s/voting-app.yaml` |
+| Labels and selectors | ✅ | `./audit.sh`: 4 services have endpoints. | Connects services to the intended pods. | `k8s/voting-app.yaml` |
+| Rolling update + rollback | ✅ | Changed the vote image tag to v2, waited for rollout, then ran `kubectl rollout undo` and waited again. v2 used the same image digest as v1. | Demonstrates Deployment revision and rollback mechanics. | `k8s/voting-app.yaml` |
+| ConfigMap | ✅ | `./audit.sh`: 1 non-default ConfigMap. | Separates ordinary configuration from the container image. | `k8s/voting-app.yaml` |
+| Secret | ✅ | `./audit.sh`: 1 Opaque Secret. Demo password only. | Supplies the database password separately from ordinary configuration. | `k8s/voting-app.yaml` |
+| Requests and limits | ✅ | `./audit.sh`: 8 of 8 containers passed in the final 16/16 run. | Helps schedule workloads and constrain resource usage. | `k8s/voting-app.yaml`, `k8s/audit-extras.yaml` |
+| Probes (liveness + readiness) | ✅ | `./audit.sh`: 8 of 8 containers passed in the final 16/16 run. | Checks container health and readiness for traffic. | `k8s/voting-app.yaml` |
+| PVC | ✅ | `./audit.sh`: 1 bound PVC. | Persists PostgreSQL data. | `k8s/voting-app.yaml` |
+| Ingress | ✅ | `./audit.sh`: 1 Ingress and 1 running controller; `curl -I http://localhost/` returned HTTP 200. `/result` returned HTTP 404. | Exposes the vote frontend through HTTP routing. | `k8s/voting-app.yaml`, `kind/README.md` |
+| Multi-node kind cluster | ✅ | `kubectl get nodes` showed 3 nodes. | Demonstrates workload scheduling across multiple nodes. | `kind/kind-config.yaml` |
+| HPA (stretch) | ✅ | `kubectl get hpa -n voting` showed CPU 1%/70% and 2 replicas. | Enables CPU-based scaling from 2 to 4 vote replicas. | `k8s/audit-extras.yaml` |
+| RBAC + ServiceAccount (stretch) | ✅ | `./audit.sh`: 1 Role, 1 RoleBinding and 1 custom ServiceAccount. | Grants scoped pod-read permissions to the worker identity. | `k8s/voting-app.yaml`, `k8s/audit-extras.yaml` |
+| CronJob (stretch) | ✅ | `kubectl get cronjob -n voting` showed a schedule of every 5 minutes. | Demonstrates a recurring scheduled task. | `k8s/audit-extras.yaml` |
+| GitHub Actions deploying to kind (stretch) | ⚠️ | Workflow file exists and the audit script detects it; a successful GitHub Actions run has not yet been verified. | Automates cluster setup, deployment and audit checks. | `.github/workflows/kind-deploy.yml` |
 
 ## Score
 
-- Must-have concepts with ✅ and evidence (12 max):
-- Stretch concepts with ✅ and evidence (4 max):
-- Total (pass at 10 or more):
+- Must-have concepts with evidence: 12/12
+- Stretch concepts detected by the local audit: 4/4
+- Local audit result: 16/16
+
+Note: The local audit detects the GitHub Actions workflow by its contents. This does not prove that the workflow succeeds on GitHub Actions.
 
 ## What was hard / what I would change
 
-A few lines, in your own words.
+The main challenge was deploying the application components and dependencies together and validating their probes, storage, networking and scaling. I would improve the demo by investigating the `/result` route, using a genuinely changed image for the rollout test, and validating the workflow on GitHub Actions.
